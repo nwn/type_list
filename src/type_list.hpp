@@ -41,6 +41,28 @@ namespace tl {
     template <size_t I, typename TypeList>
     using at_t = typename at<I, TypeList>::type;
 
+
+    template <typename... TypeLists>
+    struct concat;
+
+    template <>
+    struct concat<> {
+        using type = type_list<>;
+    };
+
+    template <typename... Ts>
+    struct concat<type_list<Ts...>> {
+        using type = type_list<Ts...>;
+    };
+
+    template <typename... Ts, typename... Us, typename... TypeLists>
+    struct concat<type_list<Ts...>, type_list<Us...>, TypeLists...> {
+        using type = typename concat<type_list<Ts..., Us...>, TypeLists...>::type;
+    };
+
+    template <typename... TypeLists>
+    using concat_t = typename concat<TypeLists...>::type;
+
 }  // tl
 
 #endif  // TYPE_LIST_HPP_
