@@ -34,29 +34,29 @@ namespace tl {
     template <typename TypeList>
     using last_t = typename last<TypeList>::type;
 
-    namespace _details::linear {
+    namespace _details::at {
 
-        template <size_t I, typename... Ts>
-        struct check_bounds {
-            static_assert(I < sizeof...(Ts), "type_list index out of bounds");
-        };
+        namespace linear {
 
-        template <size_t I, typename... Ts>
-        struct at_impl: check_bounds<I, Ts...> { };
+            template <size_t I, typename... Ts>
+            struct check_bounds {
+                static_assert(I < sizeof...(Ts), "type_list index out of bounds");
+            };
 
-        template <typename T, typename... Ts>
-        struct at_impl<0, T, Ts...>: check_bounds<0, T, Ts...> {
-            using type = T;
-        };
+            template <size_t I, typename... Ts>
+            struct at_impl: check_bounds<I, Ts...> { };
 
-        template <size_t I, typename T, typename... Ts>
-        struct at_impl<I, T, Ts...>: check_bounds<I, T, Ts...> {
-            using type = typename at_impl<I - 1, Ts...>::type;
-        };
+            template <typename T, typename... Ts>
+            struct at_impl<0, T, Ts...>: check_bounds<0, T, Ts...> {
+                using type = T;
+            };
 
-    }  // _details::linear
+            template <size_t I, typename T, typename... Ts>
+            struct at_impl<I, T, Ts...>: check_bounds<I, T, Ts...> {
+                using type = typename at_impl<I - 1, Ts...>::type;
+            };
 
-    namespace _details::logarithmic {
+        }  // linear
 
         template <size_t I, typename... Ts>
         struct check_bounds {
@@ -87,14 +87,14 @@ namespace tl {
             ))::type;
         };
 
-    }  // _details::logarithmic
+    }  // _details::at
 
     template <size_t I, typename TypeList>
     struct at;
 
     template <size_t I, template <typename...> typename TypeList, typename... Ts>
     struct at<I, TypeList<Ts...>> {
-        using type = typename _details::logarithmic::at_impl<I, Ts...>::type;
+        using type = typename _details::at::at_impl<I, Ts...>::type;
     };
 
     template <size_t I, typename TypeList>
