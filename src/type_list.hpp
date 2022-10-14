@@ -2,11 +2,37 @@
 #define TYPE_LIST_HPP_
 
 #include <cstddef>
+#include <type_traits>
+#include <utility>
 
 namespace tl {
 
     template <typename... Ts>
-    struct type_list {};
+    struct type_list {
+        static constexpr size_t size = sizeof...(Ts);
+    };
+
+    template <typename TypeList>
+    struct first;
+
+    template <typename T, typename... Ts>
+    struct first<type_list<T, Ts...>> {
+        using type = T;
+    };
+
+    template <typename TypeList>
+    using first_t = typename first<TypeList>::type;
+
+    template <typename TypeList>
+    struct last;
+
+    template <typename... Ts>
+    struct last<type_list<Ts...>> {
+        using type = typename decltype((std::type_identity<Ts>(), ...))::type;
+    };
+
+    template <typename TypeList>
+    using last_t = typename last<TypeList>::type;
 
     namespace _details::linear {
 
@@ -30,12 +56,45 @@ namespace tl {
 
     }  // _details::linear
 
+    namespace _details::logarithmic {
+
+        template <size_t I, typename... Ts>
+        struct check_bounds {
+            static_assert(I < sizeof...(Ts), "type_list index out of bounds");
+        };
+
+        // Leverage the multiple-inheritance technique from:
+        // https://ldionne.com/2015/11/29/efficient-parameter-pack-indexing/
+        template <size_t I, typename T>
+        struct indexed {
+            using type = T;
+        };
+
+        template <typename Is, typename... Ts>
+        struct indexer;
+
+        template <size_t... Is, typename... Ts>
+        struct indexer<std::index_sequence<Is...>, Ts...> : indexed<Is, Ts>...
+        { };
+
+        template <size_t I, typename T>
+        static constexpr indexed<I, T> select(indexed<I, T>);
+
+        template <size_t I, typename... Ts>
+        struct at_impl: check_bounds<I, Ts...> {
+            using type = typename decltype(select<I>(
+                indexer<std::index_sequence_for<Ts...>, Ts...>{}
+            ))::type;
+        };
+
+    }  // _details::logarithmic
+
     template <size_t I, typename TypeList>
     struct at;
 
     template <size_t I, template <typename...> typename TypeList, typename... Ts>
     struct at<I, TypeList<Ts...>> {
-        using type = typename _details::linear::at_impl<I, Ts...>::type;
+        using type = typename _details::logarithmic::at_impl<I, Ts...>::type;
     };
 
     template <size_t I, typename TypeList>

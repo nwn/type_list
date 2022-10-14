@@ -3,6 +3,19 @@
 #include "type_list.hpp"
 
 int main() {
+    static_assert(std::is_same_v<tl::first_t<tl::type_list<char>>, char>, "Oh no!");
+    static_assert(std::is_same_v<tl::first_t<tl::type_list<bool, char>>, bool>, "Oh no!");
+    static_assert(std::is_same_v<tl::first_t<tl::type_list<void, bool, char>>, void>, "Oh no!");
+
+    static_assert(std::is_same_v<tl::last_t<tl::type_list<char>>, char>, "Oh no!");
+    static_assert(std::is_same_v<tl::last_t<tl::type_list<char, bool>>, bool>, "Oh no!");
+    static_assert(std::is_same_v<tl::last_t<tl::type_list<char, bool, void>>, void>, "Oh no!");
+
+    // Should fail:
+    // static_assert(std::is_same_v<tl::first_t<tl::type_list<>>, void>, "Oh no!");
+    // static_assert(std::is_same_v<tl::last_t<tl::type_list<>>, void>, "Oh no!");
+
+
     using list_t = tl::type_list<char, bool, void>;
 
     static_assert(std::is_same_v<char, typename tl::at<0, list_t>::type>, "Oh no!");
@@ -33,4 +46,51 @@ int main() {
     // Should fail:
     // tl::concat_t<int> X;
     // tl::concat_t<int, list_t> Y;
+
+    using void256 = tl::type_list<
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void,
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void,
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void,
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void,
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void,
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void,
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void,
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void,
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void,
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void,
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void,
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void,
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void,
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void,
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void,
+        void, void, void, void, void, void, void, void, void, void, void, void, void, void, void, void
+    >;
+    using void4096 = tl::concat_t<
+        void256, void256, void256, void256, void256, void256, void256, void256,
+        void256, void256, void256, void256, void256, void256, void256, void256
+    >;
+    static_assert(std::is_same_v<void, tl::at_t<void4096::size - 1, void4096>>, "Oh no!");
+    static_assert(std::is_same_v<void, tl::last_t<void4096>>, "Oh no!");
+
+    // This starts to get slow (~5s):
+    // using void65536 = tl::concat_t<
+    //     void256, void256, void256, void256, void256, void256, void256, void256,
+    //     void256, void256, void256, void256, void256, void256, void256, void256,
+    //     void256, void256, void256, void256, void256, void256, void256, void256,
+    //     void256, void256, void256, void256, void256, void256, void256, void256,
+    //     void256, void256, void256, void256, void256, void256, void256, void256,
+    //     void256, void256, void256, void256, void256, void256, void256, void256,
+    //     void256, void256, void256, void256, void256, void256, void256, void256,
+    //     void256, void256, void256, void256, void256, void256, void256, void256,
+    //     void256, void256, void256, void256, void256, void256, void256, void256,
+    //     void256, void256, void256, void256, void256, void256, void256, void256,
+    //     void256, void256, void256, void256, void256, void256, void256, void256,
+    //     void256, void256, void256, void256, void256, void256, void256, void256,
+    //     void256, void256, void256, void256, void256, void256, void256, void256,
+    //     void256, void256, void256, void256, void256, void256, void256, void256,
+    //     void256, void256, void256, void256, void256, void256, void256, void256,
+    //     void256, void256, void256, void256, void256, void256, void256, void256
+    // >;
+    // static_assert(std::is_same_v<void, tl::at_t<void65536::size - 1, void65536>>, "Oh no!");
+    // static_assert(std::is_same_v<void, tl::last_t<void65536>>, "Oh no!");
 }
