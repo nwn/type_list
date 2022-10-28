@@ -183,12 +183,45 @@ namespace tl {
     template <typename T, typename TypeList>
     static constexpr bool contains_v = contains<T, TypeList>::value;
 
+    template <template <typename> typename Pred, typename TypeList>
+    struct all_of;
+
+    template <template <typename> typename Pred, typename... Ts>
+    struct all_of<Pred, type_list<Ts...>> : std::conjunction<Pred<Ts>...> {};
+
+    template <template <typename> typename Pred, typename TypeList>
+    static constexpr bool all_of_v = all_of<Pred, TypeList>::value;
+
+    template <template <typename> typename Pred, typename TypeList>
+    struct any_of;
+
+    template <template <typename> typename Pred, typename... Ts>
+    struct any_of<Pred, type_list<Ts...>> : std::disjunction<Pred<Ts>...> {};
+
+    template <template <typename> typename Pred, typename TypeList>
+    static constexpr bool any_of_v = any_of<Pred, TypeList>::value;
+
+    template <template <typename> typename Pred, typename TypeList>
+    struct none_of : std::negation<any_of<Pred, TypeList>> {};
+
+    template <template <typename> typename Pred, typename TypeList>
+    static constexpr bool none_of_v = none_of<Pred, TypeList>::value;
+
     template <typename... Ts>
     struct type_list {
         static constexpr size_t size = sizeof...(Ts);
 
         template <typename T>
         static constexpr bool contains = contains_v<T, type_list>;
+
+        template <template <typename> typename Pred>
+        static constexpr bool all_of = all_of_v<Pred, type_list>;
+
+        template <template <typename> typename Pred>
+        static constexpr bool any_of = any_of_v<Pred, type_list>;
+
+        template <template <typename> typename Pred>
+        static constexpr bool none_of = none_of_v<Pred, type_list>;
     };
 }  // tl
 

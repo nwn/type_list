@@ -129,7 +129,7 @@ int main() {
     static_assert(std::is_same_v<list_nullptr, tl::filter_t<list_mixed, std::is_null_pointer>>, "Oh no!");
 
     static_assert(std::is_same_v<list_mixed, tl::filter_t<list_mixed, tl::always_true>>, "Oh no!");
-    static_assert(std::is_same_v<tl::type_list<>, tl::filter_t<list_mixed, tl::always_false>>, "Oh no!");
+    static_assert(std::is_same_v<empty_list_t, tl::filter_t<list_mixed, tl::always_false>>, "Oh no!");
 
 
     static_assert(tl::contains_v<char, list_t>, "Oh no!");
@@ -141,4 +141,20 @@ int main() {
     static_assert(list_t::contains<bool>, "Oh no!");
     static_assert(list_t::contains<void>, "Oh no!");
     static_assert(!list_t::contains<int>, "Oh no!");
+
+
+    static_assert(list_ints::all_of<std::is_integral>, "Oh no!");
+    static_assert(!list_t::all_of<std::is_integral>, "Oh no!");
+    static_assert(empty_list_t::all_of<std::is_union>, "Oh no!");
+    static_assert(empty_list_t::all_of<tl::always_false>, "Oh no!");
+
+    static_assert(list_t::any_of<std::is_integral>, "Oh no!");
+    static_assert(!list_t::any_of<std::is_floating_point>, "Oh no!");
+    static_assert(!empty_list_t::any_of<std::is_union>, "Oh no!");
+    static_assert(!empty_list_t::any_of<tl::always_true>, "Oh no!");
+
+    static_assert(!list_t::none_of<std::is_integral>, "Oh no!");
+    static_assert(list_t::none_of<std::is_floating_point>, "Oh no!");
+    static_assert(empty_list_t::none_of<std::is_union>, "Oh no!");
+    static_assert(empty_list_t::none_of<tl::always_true>, "Oh no!");
 }
