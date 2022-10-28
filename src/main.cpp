@@ -108,4 +108,19 @@ int main() {
 
     using lasts = tl::map_t<list_meta, tl::last>;
     static_assert(std::is_same_v<lasts, tl::type_list<uint64_t, char32_t, nullptr_t>>, "Oh no!");
+
+    using list_mixed = tl::type_list<int8_t, float, void, double, char*, void, const std::string, nullptr_t>;
+    using list_integral = tl::type_list<int8_t>;
+    using list_float = tl::type_list<float, double>;
+    using list_void = tl::type_list<void, void>;
+    using list_pointer = tl::type_list<char*>;
+    using list_const = tl::type_list<const std::string>;
+    using list_nullptr = tl::type_list<nullptr_t>;
+
+    static_assert(std::is_same_v<list_integral, tl::filter_t<list_mixed, std::is_integral>>, "Oh no!");
+    static_assert(std::is_same_v<list_float, tl::filter_t<list_mixed, std::is_floating_point>>, "Oh no!");
+    static_assert(std::is_same_v<list_void, tl::filter_t<list_mixed, std::is_void>>, "Oh no!");
+    static_assert(std::is_same_v<list_pointer, tl::filter_t<list_mixed, std::is_pointer>>, "Oh no!");
+    static_assert(std::is_same_v<list_const, tl::filter_t<list_mixed, std::is_const>>, "Oh no!");
+    static_assert(std::is_same_v<list_nullptr, tl::filter_t<list_mixed, std::is_null_pointer>>, "Oh no!");
 }

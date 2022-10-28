@@ -133,6 +133,37 @@ namespace tl {
     template <typename TypeList, template <typename> typename Adaptor>
     using map_t = typename map<TypeList, Adaptor>::type;
 
+    namespace _details::filter {
+
+        template <typename Done, typename Rest, template <typename> typename Predicate>
+        struct filter_partial;
+
+        template <template <typename> typename Predicate, typename Next, typename... Done, typename... Rest>
+        struct filter_partial<type_list<Done...>, type_list<Next, Rest...>, Predicate> {
+            static constexpr bool include = Predicate<Next>::value;
+            using type = std::conditional_t<include,
+                typename filter_partial<type_list<Done..., Next>, type_list<Rest...>, Predicate>::type,
+                typename filter_partial<type_list<Done...>, type_list<Rest...>, Predicate>::type>;
+        };
+
+        template <template <typename> typename Predicate, typename... Done>
+        struct filter_partial<type_list<Done...>, type_list<>, Predicate> {
+            using type = type_list<Done...>;
+        };
+
+    }  // namespace _details::filter
+
+    template <typename TypeList, template <typename> typename Predicate>
+    struct filter;
+
+    template <template <typename> typename Predicate, typename... Ts>
+    struct filter<type_list<Ts...>, Predicate> {
+        using type = typename _details::filter::filter_partial<type_list<>, type_list<Ts...>, Predicate>::type;
+    };
+
+    template <typename TypeList, template <typename> typename Predicate>
+    using filter_t = typename filter<TypeList, Predicate>::type;
+
 }  // tl
 
 #endif  // TYPE_LIST_HPP_
