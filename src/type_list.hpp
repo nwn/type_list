@@ -168,6 +168,42 @@ namespace tl {
     template <typename TypeList, template <typename> typename Predicate>
     using filter_t = typename filter<TypeList, Predicate>::type;
 
+    namespace _details::reverse {
+
+        template <typename New, typename TypeList>
+        struct append;
+
+        template <typename New, typename... Ts>
+        struct append<New, type_list<Ts...>> {
+            using type = type_list<Ts..., New>;
+        };
+
+        template <typename... Ts>
+        struct reverse_partial;
+
+        template <>
+        struct reverse_partial<> {
+            using type = type_list<>;
+        };
+
+        template <typename First, typename... Rest>
+        struct reverse_partial<First, Rest...> {
+            using type = typename append<First, typename reverse_partial<Rest...>::type>::type;
+        };
+
+    }  // namespace _details::reverse
+
+    template <typename TypeList>
+    struct reverse;
+
+    template <typename... Ts>
+    struct reverse<type_list<Ts...>> {
+        using type = typename _details::reverse::reverse_partial<Ts...>::type;
+    };
+
+    template <typename TypeList>
+    using reverse_t = typename reverse<TypeList>::type;
+
     template <typename T, typename TypeList>
     struct contains;
 

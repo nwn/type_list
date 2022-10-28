@@ -132,6 +132,13 @@ int main() {
     static_assert(std::is_same_v<empty_list_t, tl::filter_t<list_mixed, tl::always_false>>, "Oh no!");
 
 
+    using singleton_list = tl::type_list<bool>;
+    static_assert(std::is_same_v<empty_list_t, tl::reverse_t<empty_list_t>>, "Oh no!");
+    static_assert(std::is_same_v<singleton_list, tl::reverse_t<singleton_list>>, "Oh no!");
+    static_assert(std::is_same_v<tl::type_list<void, bool, char>, tl::reverse_t<list_t>>, "Oh no!");
+    static_assert(std::is_same_v<list_t, tl::reverse_t<tl::reverse_t<list_t>>>, "Oh no!");
+
+
     static_assert(tl::contains_v<char, list_t>, "Oh no!");
     static_assert(tl::contains_v<bool, list_t>, "Oh no!");
     static_assert(tl::contains_v<void, list_t>, "Oh no!");
