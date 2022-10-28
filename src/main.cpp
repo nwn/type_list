@@ -94,6 +94,7 @@ int main() {
     // static_assert(std::is_same_v<void, tl::at_t<void65536::size - 1, void65536>>, "Oh no!");
     // static_assert(std::is_same_v<void, tl::last_t<void65536>>, "Oh no!");
 
+
     static_assert(std::is_same_v<list_t, tl::map_t<list_t, std::type_identity>>, "Oh no!");
 
     using list_ints = tl::type_list<int8_t, int16_t, int32_t, int64_t>;
@@ -110,6 +111,7 @@ int main() {
 
     using lasts = tl::map_t<list_meta, tl::last>;
     static_assert(std::is_same_v<lasts, tl::type_list<uint64_t, char32_t, nullptr_t>>, "Oh no!");
+
 
     using list_mixed = tl::type_list<int8_t, float, void, double, char*, void, const std::string, nullptr_t>;
     using list_integral = tl::type_list<int8_t>;
@@ -128,4 +130,15 @@ int main() {
 
     static_assert(std::is_same_v<list_mixed, tl::filter_t<list_mixed, tl::always_true>>, "Oh no!");
     static_assert(std::is_same_v<tl::type_list<>, tl::filter_t<list_mixed, tl::always_false>>, "Oh no!");
+
+
+    static_assert(tl::contains_v<char, list_t>, "Oh no!");
+    static_assert(tl::contains_v<bool, list_t>, "Oh no!");
+    static_assert(tl::contains_v<void, list_t>, "Oh no!");
+    static_assert(!tl::contains_v<int, list_t>, "Oh no!");
+
+    static_assert(list_t::contains<char>, "Oh no!");
+    static_assert(list_t::contains<bool>, "Oh no!");
+    static_assert(list_t::contains<void>, "Oh no!");
+    static_assert(!list_t::contains<int>, "Oh no!");
 }

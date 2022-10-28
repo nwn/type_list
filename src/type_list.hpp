@@ -8,9 +8,7 @@
 namespace tl {
 
     template <typename... Ts>
-    struct type_list {
-        static constexpr size_t size = sizeof...(Ts);
-    };
+    struct type_list;
 
     template <typename TypeList>
     struct first;
@@ -170,6 +168,28 @@ namespace tl {
     template <typename TypeList, template <typename> typename Predicate>
     using filter_t = typename filter<TypeList, Predicate>::type;
 
+    template <typename T, typename TypeList>
+    struct contains;
+
+    template <typename T>
+    struct contains<T, type_list<>> : std::false_type {};
+
+    template <typename T, typename... Ts>
+    struct contains<T, type_list<T, Ts...>> : std::true_type {};
+
+    template <typename T, typename Next, typename... Ts>
+    struct contains<T, type_list<Next, Ts...>> : contains<T, type_list<Ts...>> {};
+
+    template <typename T, typename TypeList>
+    static constexpr bool contains_v = contains<T, TypeList>::value;
+
+    template <typename... Ts>
+    struct type_list {
+        static constexpr size_t size = sizeof...(Ts);
+
+        template <typename T>
+        static constexpr bool contains = contains_v<T, type_list>;
+    };
 }  // tl
 
 #endif  // TYPE_LIST_HPP_
