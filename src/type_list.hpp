@@ -133,6 +133,12 @@ namespace tl {
     template <typename TypeList, template <typename> typename Adaptor>
     using map_t = typename map<TypeList, Adaptor>::type;
 
+    template <typename>
+    struct always_true: std::true_type {};
+
+    template <typename>
+    struct always_false: std::false_type {};
+
     namespace _details::filter {
 
         template <typename Done, typename Rest, template <typename> typename Predicate>

@@ -94,6 +94,8 @@ int main() {
     // static_assert(std::is_same_v<void, tl::at_t<void65536::size - 1, void65536>>, "Oh no!");
     // static_assert(std::is_same_v<void, tl::last_t<void65536>>, "Oh no!");
 
+    static_assert(std::is_same_v<list_t, tl::map_t<list_t, std::type_identity>>, "Oh no!");
+
     using list_ints = tl::type_list<int8_t, int16_t, int32_t, int64_t>;
     using list_uints = tl::type_list<uint8_t, uint16_t, uint32_t, uint64_t>;
     using list_chars = tl::type_list<char8_t, char16_t, char32_t>;
@@ -123,4 +125,7 @@ int main() {
     static_assert(std::is_same_v<list_pointer, tl::filter_t<list_mixed, std::is_pointer>>, "Oh no!");
     static_assert(std::is_same_v<list_const, tl::filter_t<list_mixed, std::is_const>>, "Oh no!");
     static_assert(std::is_same_v<list_nullptr, tl::filter_t<list_mixed, std::is_null_pointer>>, "Oh no!");
+
+    static_assert(std::is_same_v<list_mixed, tl::filter_t<list_mixed, tl::always_true>>, "Oh no!");
+    static_assert(std::is_same_v<tl::type_list<>, tl::filter_t<list_mixed, tl::always_false>>, "Oh no!");
 }
