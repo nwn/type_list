@@ -258,6 +258,11 @@ namespace tl {
 
         template <template <typename> typename Pred>
         static constexpr bool none_of = none_of_v<Pred, type_list>;
+
+        template <typename TemplFunc>
+        static void for_each(TemplFunc templ_func) {
+            (void)((templ_func.template operator()<Ts>(), 0) + ...);
+        }
     };
 }  // tl
 

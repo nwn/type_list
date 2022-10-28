@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cassert>
+#include <vector>
 
 #include "type_list.hpp"
 
@@ -164,4 +166,16 @@ int main() {
     static_assert(list_t::none_of<std::is_floating_point>, "Oh no!");
     static_assert(empty_list_t::none_of<std::is_union>, "Oh no!");
     static_assert(empty_list_t::none_of<tl::always_true>, "Oh no!");
+
+
+    {
+        std::vector<size_t> sizes;
+        list_ints::for_each(
+            [&sizes]<typename T>() {
+                sizes.emplace_back(sizeof(T));
+            }
+        );
+        const std::vector<size_t> expected {1, 2, 4, 8};
+        assert(sizes == expected);
+    }
 }
