@@ -122,6 +122,17 @@ namespace tl {
     template <typename... TypeLists>
     using concat_t = typename concat<TypeLists...>::type;
 
+    template <typename TypeList, template <typename> typename Adaptor>
+    struct map;
+
+    template <template <typename> typename Adaptor, typename... Ts>
+    struct map<type_list<Ts...>, Adaptor> {
+        using type = type_list<typename Adaptor<Ts>::type...>;
+    };
+
+    template <typename TypeList, template <typename> typename Adaptor>
+    using map_t = typename map<TypeList, Adaptor>::type;
+
 }  // tl
 
 #endif  // TYPE_LIST_HPP_

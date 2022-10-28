@@ -93,4 +93,19 @@ int main() {
     // >;
     // static_assert(std::is_same_v<void, tl::at_t<void65536::size - 1, void65536>>, "Oh no!");
     // static_assert(std::is_same_v<void, tl::last_t<void65536>>, "Oh no!");
+
+    using list_ints = tl::type_list<int8_t, int16_t, int32_t, int64_t>;
+    using list_uints = tl::type_list<uint8_t, uint16_t, uint32_t, uint64_t>;
+    using list_chars = tl::type_list<char8_t, char16_t, char32_t>;
+    using list_null = tl::type_list<nullptr_t>;
+
+    static_assert(std::is_same_v<list_ints, tl::map_t<list_uints, std::make_signed>>, "Oh no!");
+
+    using list_meta = tl::type_list<list_uints, list_chars, list_null>;
+
+    using firsts = tl::map_t<list_meta, tl::first>;
+    static_assert(std::is_same_v<firsts, tl::type_list<uint8_t, char8_t, nullptr_t>>, "Oh no!");
+
+    using lasts = tl::map_t<list_meta, tl::last>;
+    static_assert(std::is_same_v<lasts, tl::type_list<uint64_t, char32_t, nullptr_t>>, "Oh no!");
 }
